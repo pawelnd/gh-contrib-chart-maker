@@ -1,0 +1,27 @@
+name: Dense Daily Commits
+
+on:
+  schedule:
+    - cron: "0 7 * * *" # Runs every day at 07:00 UTC
+  workflow_dispatch:     # Manual trigger option
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Make multiple commits
+        run: |
+          for i in {1..5}; do
+            echo "Commit $i at $(date -u)" >> daily-log.txt
+            git add daily-log.txt
+            git commit -m "auto commit $i for $(date -u)" || echo "No changes"
+          done
+
+      - name: Push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git push
